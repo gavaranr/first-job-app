@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobService {
 
     private List<Job> jobs = new ArrayList<>();
+    private Job job;
     private Long nextId = 1L;
 
     @Override
@@ -18,6 +21,14 @@ public class JobServiceImpl implements JobService {
         return jobs;
     }
 
+    @Override
+    public Job getJobById(Long id) {
+
+        return jobs.stream()
+                .filter(eachJob -> eachJob.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
     @Override
     public void createJob(Job job) {
         job.setId(nextId++);
