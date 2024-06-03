@@ -1,7 +1,6 @@
 package com.naveenx.firstjobapp.job;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface JobService {
 
@@ -9,4 +8,8 @@ public interface JobService {
     void createJob(Job job);
 
     Job getJobById(Long id);
+
+    boolean deleteJobById(Long id);
+
+    boolean updateJob(Long id, Job job);
 }
