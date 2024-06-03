@@ -12,6 +12,11 @@ import java.util.List;
 public class JobController {
 
     private JobService jobService;
+
+    public JobController(JobService jobService) {
+        this.jobService = jobService;
+    }
+
     @GetMapping("/jobs")
     public List<Job> findAll () {
         return jobService.findAll();
