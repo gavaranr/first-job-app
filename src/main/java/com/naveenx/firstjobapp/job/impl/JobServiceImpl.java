@@ -6,7 +6,6 @@ import com.naveenx.firstjobapp.job.JobService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +16,6 @@ public class JobServiceImpl implements JobService {
     public JobServiceImpl (JobRepository jobRepository) {
         this.jobRepository = jobRepository;
     }
-    private Job job;
-    private Long nextId = 1L;
 
     @Override
     public List<Job> findAll() {
@@ -28,11 +25,10 @@ public class JobServiceImpl implements JobService {
     @Override
     public Job getJobById(Long id) {
 
-        jobRepository.findById(id).orElse(null);
+        return jobRepository.findById(id).orElse(null);
     }
     @Override
     public void createJob(@NotNull Job job) {
-        job.setId(nextId++);
         jobRepository.save(job);
     }
 
@@ -59,6 +55,7 @@ public class JobServiceImpl implements JobService {
             job.setMinSalary(updatedJob.getMinSalary());
             job.setMaxSalary(updatedJob.getMaxSalary());
             job.setLocation(updatedJob.getLocation());
+            jobRepository.save(job);
             return true;
         }
         return false;
