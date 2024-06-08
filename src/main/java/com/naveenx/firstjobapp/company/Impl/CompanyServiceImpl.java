@@ -2,6 +2,7 @@ package com.naveenx.firstjobapp.company.Impl;
 
 import com.naveenx.firstjobapp.company.Company;
 import com.naveenx.firstjobapp.company.CompanyService;
+import com.naveenx.firstjobapp.reviews.Review;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
