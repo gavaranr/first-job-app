@@ -1,10 +1,12 @@
 package com.naveenx.firstjobapp.company;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 public interface CompanyService {
 
-    List<Company> findAll();
+    List<Company> getAllCompanies();
 
     Company getCompanyById(Long id);
 

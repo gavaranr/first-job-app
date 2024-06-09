@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,9 +18,15 @@ public class CompanyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Company>> findAll() {
+    public ResponseEntity<List<Company>> getAllCompanies() {
 
-        return new ResponseEntity<>(companyService.findAll(), HttpStatus.OK);
+        List<Company> companyList = new ArrayList<>(companyService.getAllCompanies());
+
+        if (!companyList.isEmpty()) {
+            return new ResponseEntity<>(companyList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(companyList, HttpStatus.NOT_FOUND);
+        }
     }
 
 
@@ -46,11 +53,11 @@ public class CompanyController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCompanyById(@PathVariable Long id) {
 
-        boolean deleted = companyService.deleteCompanyById(id);
+        boolean isDeleted = companyService.deleteCompanyById(id);
 
-        return deleted ? new ResponseEntity<>(
+        return isDeleted ? new ResponseEntity<>(
                 "Company deleted successfully", HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
     }
 
     @PostMapping

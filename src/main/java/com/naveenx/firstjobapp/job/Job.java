@@ -1,5 +1,7 @@
 package com.naveenx.firstjobapp.job;
 
+import com.naveenx.firstjobapp.company.Company;
+import com.naveenx.firstjobapp.company.CompanyRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,4 +20,7 @@ public class Job {
     private String minSalary;
     private String maxSalary;
     private String location;
+
+    @ManyToOne
+    private Company company;
 }
