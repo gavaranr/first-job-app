@@ -5,6 +5,7 @@ import com.naveenx.firstjobapp.company.CompanyRepository;
 import com.naveenx.firstjobapp.company.CompanyService;
 import com.naveenx.firstjobapp.reviews.Review;
 import org.aspectj.apache.bcel.classfile.Module;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,14 +15,12 @@ import java.util.Optional;
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
+    @Autowired
     private CompanyRepository companyRepository;
 
     public CompanyServiceImpl (CompanyRepository companyRepository) {
         this.companyRepository = companyRepository;
     }
-    private List<Company> companies = new ArrayList<>();
-    private Company company;
-    private Long nextId = 1L;
 
     @Override
     public List<Company> getAllCompanies() {
