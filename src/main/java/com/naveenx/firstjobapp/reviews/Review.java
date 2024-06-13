@@ -1,9 +1,8 @@
 package com.naveenx.firstjobapp.reviews;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.naveenx.firstjobapp.company.Company;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,14 +11,14 @@ import lombok.Setter;
 @Entity
 public class Review {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
     private String review;
+    private String rating;
 
+    @JsonIgnore
     @ManyToOne // Indicates a many-to-one relationship with Company
     private Company company;
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
 }
 

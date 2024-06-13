@@ -27,5 +27,4 @@ public class Company {
     @JsonIgnore
     @OneToMany(mappedBy = "company")
     private List<Review> reviews;
-
 }

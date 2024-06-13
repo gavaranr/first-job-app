@@ -2,17 +2,21 @@ package com.naveenx.firstjobapp.reviews.Impl;
 
 import com.naveenx.firstjobapp.company.Company;
 import com.naveenx.firstjobapp.company.CompanyRepository;
+import com.naveenx.firstjobapp.company.CompanyService;
 import com.naveenx.firstjobapp.reviews.Review;
 import com.naveenx.firstjobapp.reviews.ReviewRepository;
 import com.naveenx.firstjobapp.reviews.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
+    @Autowired
+    private CompanyService companyService;
     @Autowired
     private ReviewRepository reviewRepository;
 
@@ -22,13 +26,12 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewServiceImpl() {
         // Optional: Initialize fields here if needed
     }
-    public ReviewServiceImpl(ReviewRepository reviewRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, CompanyRepository companyRepository, CompanyService companyService) {
         this.reviewRepository = reviewRepository;
+        this.companyRepository = companyRepository;
+        this.companyService = companyService;
     }
 
-    public ReviewServiceImpl(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
-    }
     @Override
     public Review getCompanyReviewById(Long companyId, Long reviewId) {
 
@@ -37,20 +40,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void createReview(Long companyId, Review review) {
+    public boolean createReview(Long companyId, Review review) {
 
-        Optional<Company> companyOptional = companyRepository.findById(companyId);
-
-        if (companyOptional.isPresent()) {
-            Company company = companyOptional.get();
-            // Set the company for the review (assuming a relationship)
+        Company company = companyService.getCompanyById(companyId);
+        if (company != null) {
             review.setCompany(company);
-
-            // Save the company (JPA will cascade the review)
-            companyRepository.save(company);
+            reviewRepository.save(review);
+            return true;
         } else {
-            // Handle case where company is not found (log error or throw exception)
-            throw new RuntimeException("Company with ID: " + companyId + " not found."); // Example handling
+            return false;
         }
     }
 
@@ -58,56 +56,42 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<Review> getAllReviewsByCompanyId(Long companyId) {
 
-        Optional<Company> companyOptional = companyRepository.findById(companyId);
+        List<Review> reviews = reviewRepository.findByCompanyId(companyId);
 
-        if (companyOptional.isPresent()) {
-            Company company = companyOptional.get();
-            return company.getReviews();
-        }
-        else {
+        if (!reviews.isEmpty()) {
+            return reviews;
+        } else {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public boolean editReviewByCompanyIdReviewId(Long companyId, Long reviewId, Review review) {
+    public boolean editReviewByCompanyIdReviewId(Long companyId, Long reviewId, Review updatedReview) {
 
-        // 1. Find the existing review
-        Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
-
-        // 2. Check if review exists and belongs to the company
-        if (existingReviewOptional.isPresent() &&
-                existingReviewOptional.get().getCompany().getId().equals(companyId)) {
-
-            // Update existing review object with new data (considering immutability)
-            Review existingReview = existingReviewOptional.get();
-            // Update the existing review from the provided "review" object
-            existingReview.setReview(review.getReview());
-
-            // 3. Save the updated review
-            reviewRepository.save(existingReview);
-
-            return true; // Successful update
-        } else {
-            // Review not found or doesn't belong to the company
-            return false; // Update failed
-        }
+        if (companyService.getCompanyById(companyId) != null) {
+            updatedReview.setCompany(companyService.getCompanyById(companyId));
+            updatedReview.setId(reviewId);
+            reviewRepository.save(updatedReview);
+            return true;
+        } else return false;
     }
 
 
     @Override
     public boolean deleteReviewByCompanyIdReviewId(Long companyId, Long reviewId) {
 
-        // 1. Find the existing review
-        Optional<Review> existingReviewOptional = reviewRepository.findById(reviewId);
+        if (companyService.getCompanyById(companyId) != null && reviewRepository.existsById(reviewId)) {
 
-        // 2. Check if review exists and belongs to the company
-        if (existingReviewOptional.isPresent() &&
-                existingReviewOptional.get().getCompany().getId().equals(companyId)) {
+            Review review = reviewRepository.findById(reviewId).orElse(null);
+            assert review != null;
+            Company company = review.getCompany();
+            company.getReviews().remove(review);
+            review.setCompany(null);
+            companyService.updateCompany(companyId, company);
             reviewRepository.deleteById(reviewId);
-            return true; // Explicitly return true on successful deletion
+            return true;
         } else {
-            return false; // Explicitly return false if review not found or wrong company
+            return false;
         }
     }
 }

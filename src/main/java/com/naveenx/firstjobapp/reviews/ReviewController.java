@@ -31,10 +31,11 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<String> addReview (@PathVariable Long companyId, @RequestBody Review review) {
 
-        reviewService.createReview(companyId, review);
+        boolean isCreated = reviewService.createReview(companyId, review);
 
-        return new ResponseEntity<>(
-                "Review created successfully", HttpStatus.OK);
+        return isCreated? new ResponseEntity<>(
+                "Review created successfully", HttpStatus.OK) :
+                new ResponseEntity<>("Company with ID " + companyId + " doesn't exist. You can add a review only to a company that exists", HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/{reviewId}")
