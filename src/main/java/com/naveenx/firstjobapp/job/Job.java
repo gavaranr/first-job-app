@@ -1,5 +1,6 @@
 package com.naveenx.firstjobapp.job;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.naveenx.firstjobapp.company.Company;
 import com.naveenx.firstjobapp.company.CompanyRepository;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ public class Job {
     private String maxSalary;
     private String location;
 
+    @JsonIgnore
     @ManyToOne
     private Company company;
 }
